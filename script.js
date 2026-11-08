@@ -55,11 +55,10 @@
 // -----------------------------------------------
 // 3. SCROLL REVEAL
 // -----------------------------------------------
-(function initReveal() {
-  const els = document.querySelectorAll('.reveal');
+function initReveal(container = document) {
+  const els = container.querySelectorAll('.reveal:not(.visible)');
 
   if (!('IntersectionObserver' in window)) {
-    // Fallback: show everything
     els.forEach(el => el.classList.add('visible'));
     return;
   }
@@ -67,8 +66,8 @@
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        // Stagger children within the same parent
-        const siblings = entry.target.parentElement.querySelectorAll('.reveal');
+        const parent = entry.target.parentElement;
+        const siblings = parent ? parent.querySelectorAll('.reveal') : [entry.target];
         let delay = 0;
         siblings.forEach(sib => {
           if (!sib.classList.contains('visible')) {
@@ -86,7 +85,10 @@
   });
 
   els.forEach(el => observer.observe(el));
-})();
+}
+
+// Initial reveal initialization
+initReveal();
 
 // -----------------------------------------------
 // 4. ACTIVE NAV LINK on scroll
@@ -114,7 +116,53 @@
 })();
 
 // -----------------------------------------------
-// 5. CONTACT FORM
+// 5. FETCH EMPLOYEES (JSONPlaceholder API)
+// -----------------------------------------------
+(function initEmployees() {
+  const container = document.getElementById('employeesGrid');
+  if (!container) return;
+
+  fetch('https://jsonplaceholder.typicode.com/users')
+    .then(res => {
+      if (!res.ok) throw new Error('Network response failed');
+      return res.json();
+    })
+    .then(users => {
+      container.innerHTML = users.map(user => `
+        <article class="employee-card reveal">
+          <div>
+            <div class="employee-meta">
+              <span class="employee-type">Partner / Dev</span>
+              <span class="employee-company">${user.company.name}</span>
+            </div>
+            <h3 class="employee-name">${user.name}</h3>
+            <p class="employee-desc">"${user.company.catchPhrase}"</p>
+          </div>
+          <div class="employee-contact">
+            <a href="mailto:${user.email}" class="employee-link">✉ ${user.email}</a>
+            <a href="http://${user.website}" target="_blank" rel="noopener noreferrer" class="employee-link">🌐 ${user.website}</a>
+            <span class="employee-link" style="color:var(--white-dim)">📍 ${user.address.city}</span>
+          </div>
+        </article>
+      `).join('');
+
+      // Re-trigger scroll reveal observer for dynamically created elements
+      initReveal(container);
+    })
+    .catch(err => {
+      console.error('Error fetching employees:', err);
+      container.innerHTML = `
+        <div class="employee-card reveal">
+          <h3 class="employee-name" style="color:#e24b4a">Failed to load</h3>
+          <p class="employee-desc">Unable to retrieve employee data right now. Please check your internet connection.</p>
+        </div>
+      `;
+      initReveal(container);
+    });
+})();
+
+// -----------------------------------------------
+// 6. CONTACT FORM
 // -----------------------------------------------
 (function initForm() {
   const form = document.getElementById('contactForm');
@@ -123,7 +171,6 @@
 
   if (!form) return;
 
-  // Simple validation
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
@@ -144,7 +191,6 @@
     const message = form.querySelector('#message');
     let valid = true;
 
-    // Name
     if (!name.value.trim()) {
       setError(name, true);
       valid = false;
@@ -152,7 +198,6 @@
       setError(name, false);
     }
 
-    // Email
     if (!validateEmail(email.value.trim())) {
       setError(email, true);
       valid = false;
@@ -160,7 +205,6 @@
       setError(email, false);
     }
 
-    // Message
     if (!message.value.trim()) {
       setError(message, true);
       valid = false;
@@ -170,7 +214,6 @@
 
     if (!valid) return;
 
-    // Simulate send (replace with real backend / formspree / emailjs)
     btn.textContent = 'Sending...';
     btn.style.opacity = '0.6';
     btn.disabled = true;
@@ -188,14 +231,13 @@
     }, 1400);
   });
 
-  // Remove error state on input
   form.querySelectorAll('input, textarea').forEach(el => {
     el.addEventListener('input', () => setError(el, false));
   });
 })();
 
 // -----------------------------------------------
-// 6. PROJECT CARDS — subtle hover line
+// 7. PROJECT CARDS — subtle hover line
 // -----------------------------------------------
 (function initProjectHover() {
   const cards = document.querySelectorAll('.project-card');
@@ -210,7 +252,7 @@
 })();
 
 // -----------------------------------------------
-// 7. YEAR IN FOOTER
+// 8. YEAR IN FOOTER
 // -----------------------------------------------
 (function updateYear() {
   const copy = document.querySelector('.footer-copy');

@@ -623,6 +623,95 @@ a, button { cursor: none; }
   color: var(--yellow);
 }
 
+/* --- EMPLOYEES --- */
+.employees {
+  padding: var(--section-pad);
+  position: relative;
+  background: var(--black-2);
+  border-top: 1px solid var(--border);
+}
+
+.employees-grid {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.employee-card {
+  background: var(--black-3);
+  border: 1px solid var(--border);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.employee-card:hover {
+  border-color: var(--yellow);
+  transform: translateY(-4px);
+}
+
+.employee-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.employee-type {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.employee-company {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--white-dim);
+}
+
+.employee-name {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.employee-desc {
+  font-size: 0.9rem;
+  color: var(--white-dim);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.employee-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.employee-link {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--white-dim);
+  text-decoration: none;
+  transition: color 0.25s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-link:hover {
+  color: var(--yellow);
+}
+
 /* --- SERVICES STRIP --- */
 .services-strip {
   background: var(--yellow);
@@ -864,7 +953,7 @@ a, button { cursor: none; }
   }
 
   .nav-link {
-    font-size: 16px;
+    font-size: 18px;
     letter-spacing: 0.2em;
   }
 
